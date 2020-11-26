@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,7 +20,7 @@ public class GameService {
         return gameDAO.StartTheGame();
     }
 
-    public String InsertTheCoin(int column) {
+    public List<Integer> InsertTheCoin(int column) {
         return gameDAO.InsertTheCoin(column);
     }
 }

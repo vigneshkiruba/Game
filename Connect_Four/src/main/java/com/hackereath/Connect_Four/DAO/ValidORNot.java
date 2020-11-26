@@ -28,7 +28,7 @@ public class ValidORNot implements gameDAO{
     }
 
     @Override
-    public void UpdateDB(int[][] box) {
+    public List<Integer> UpdateDB(int[][] box) {
         List<Integer> MatrixBox = new ArrayList<Integer>();
         for(int i=0;i<6;i++)
         {
@@ -39,39 +39,45 @@ public class ValidORNot implements gameDAO{
         }
         String sql = "UPDATE game SET matrix = ? WHERE id = ?";
         jdbcTemplate.update(sql,new Object[]{MatrixBox.toString(),matrix.getId()});
-        return;
+        return MatrixBox;
     }
 
     @Override
-    public String InsertTheCoin(int column) {
+    public List<Integer>  InsertTheCoin(int column) {
         int[][] box = matrix.getBox();
         char color = matrix.getColor();
-        for(int i=box.length-1;i>=0;i--)
-        {
-            if(column <0 || column >7)
-                return "Invalid";
-            if(box[i][column] !=1 && box[i][column] !=2 && color == 'Y') {
-                box[i][column ] = 1;
+        List<Integer> message = new ArrayList<>();
+        for(int i=box.length-1;i>=0;i--) {
+            if (column < 0 || column > 7) {
+                message.add(-1);
+                return message;
+            }
+            else if (box[i][column] != 1 && box[i][column] != 2 && color == 'Y') {
+                box[i][column] = 1;
                 matrix.setMatrix(box);
                 matrix.setColor('R');
-                char winner = CheckWinner(box,color,column,i);
-                UpdateDB(box);
-                if(winner != 'Z')
-                    return "Yellow wins";
-                return "Valid";
-            }
-            else if(box[i][column] !=1 && box[i][column] !=2 && color == 'R') {
+                char winner = CheckWinner(box, color, column, i);
+                List<Integer> MatrixBox = UpdateDB(box);
+                if (winner != 'Z') {
+                    message.add(1);
+                    return message;
+                }
+                return MatrixBox;
+            } else if (box[i][column] != 1 && box[i][column] != 2 && color == 'R') {
                 box[i][column] = 2;
                 matrix.setMatrix(box);
                 matrix.setColor('Y');
-                char winner = CheckWinner(box,color,column,i);
-                UpdateDB(box);
-                if(winner != 'Z')
-                    return "Red wins";
-                return "Valid";
+                char winner = CheckWinner(box, color, column, i);
+                List<Integer> MatrixBox = UpdateDB(box);
+                if (winner != 'Z') {
+                    message.add(2);
+                    return message;
+                }
+                return MatrixBox;
             }
         }
-        return "Invalid";
+        message.add(-1);
+        return message;
     }
 
     @Override

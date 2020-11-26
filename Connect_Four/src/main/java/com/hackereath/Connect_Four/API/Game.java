@@ -4,9 +4,12 @@ import com.hackereath.Connect_Four.Service.GameService;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.List;
 
 import static com.hackereath.Connect_Four.ConnectFourApplication.gameLog;
 
@@ -21,17 +24,27 @@ public class Game {
         this.GameService = gameService;
     }
 
-    @PostMapping(path = "START")
-    public void StartTheGame()
+    @GetMapping("/START")
+    ResponseEntity<String> StartTheGame() {
+        GameService.StartTheGame();
+        return new ResponseEntity<>(
+                "Game is Ready" ,
+                HttpStatus.OK);
+    }
+   /* @GetMapping(path = "START")
+    public String StartTheGame()
     {
         gameLog.info("Started");
         GameService.StartTheGame();
-    }
+        return "READY";
+    }*/
     @PostMapping(path = "/Coin:{value}")
-    public String InsertTheCoin(@PathVariable ("value") int column)
+    public ResponseEntity<List<Integer>> InsertTheCoin(@PathVariable ("value") int column)
     {
         gameLog.info("Inserted");
-        return GameService.InsertTheCoin(column);
+        return new ResponseEntity<>(
+                GameService.InsertTheCoin(column) ,
+                HttpStatus.OK);
     }
 
 
